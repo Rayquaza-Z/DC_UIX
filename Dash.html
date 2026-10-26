@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aayaan Singh | Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --base:#a02c3a; --dark:#5e1621; --light:#c64453;
+  --orange:#ff7a1a; --yellow:#ffd23f; --blue:#3aa0ff; --text:#f6e7d8; --muted:#f0cfc2;
+  --raise:9px 9px 20px var(--dark),-9px -9px 20px var(--light);
+  --press:inset 6px 6px 13px var(--dark),inset -6px -6px 13px var(--light);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--base);color:var(--text);font-family:'Jost',sans-serif;font-weight:400;font-size:17px;line-height:1.6;padding:0 20px 60px}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:-.005em}
+h2{font-size:clamp(1.9rem,4vw,2.5rem);line-height:1.1;margin:64px 0 22px}
+.mono{font-family:'Jost',sans-serif;font-weight:500;letter-spacing:.02em}
+a{color:var(--blue)}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+.card{background:var(--base);border-radius:24px;padding:28px;box-shadow:var(--raise)}
+.well{background:var(--base);border-radius:16px;padding:16px 18px;box-shadow:var(--press)}
+.grid{display:grid;gap:26px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.label{color:var(--muted);font-size:.98rem;font-weight:400;letter-spacing:.03em}
+.num{font-family:'Cormorant Garamond',serif;font-weight:700;font-variant-numeric:lining-nums;overflow-wrap:anywhere;font-size:clamp(2rem,4vw,2.7rem);color:var(--orange);text-shadow:0 0 10px rgba(255,122,26,.3);line-height:1.2}
+.num.blue{color:var(--blue);text-shadow:0 0 14px rgba(58,160,255,.4)}
+.num.yellow{color:var(--yellow);text-shadow:0 0 14px rgba(255,210,63,.4)}
+
+/* header */
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding:40px 0 10px}
+header h1{font-size:clamp(2.8rem,7vw,4.6rem);line-height:1;font-weight:600}
+header p{color:var(--muted);font-size:1.1rem;font-weight:400;letter-spacing:.02em;margin-top:8px}
+nav{display:flex;gap:14px;flex-wrap:wrap}
+nav a{color:var(--text);text-decoration:none;font-weight:500;font-size:1rem;letter-spacing:.03em;padding:9px 20px;border-radius:14px;box-shadow:6px 6px 12px var(--dark),-6px -6px 12px var(--light);transition:box-shadow .2s,color .2s}
+nav a:hover{box-shadow:inset 4px 4px 9px var(--dark),inset -4px -4px 9px var(--light);color:var(--yellow)}
+
+/* sync streak (the memorable element) */
+.sync{display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:center}
+.ring{width:210px;height:210px;border-radius:50%;box-shadow:var(--press);display:grid;place-items:center;position:relative}
+.ring svg{position:absolute;inset:14px;width:calc(100% - 28px);height:calc(100% - 28px);transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.ring .track{stroke:var(--dark)}
+.ring .val{stroke:var(--orange);stroke-dasharray:314;stroke-dashoffset:314;filter:drop-shadow(0 0 6px rgba(255,122,26,.7));transition:stroke-dashoffset 1.4s ease}
+.ring b{font-family:'Cormorant Garamond',serif;font-weight:700;font-variant-numeric:lining-nums;font-size:4.2rem;color:var(--yellow);text-shadow:0 0 16px rgba(255,210,63,.5);position:relative;text-align:center;line-height:1}
+.ring b small{display:block;font-size:.95rem;font-weight:400;letter-spacing:.03em;color:var(--muted);text-shadow:none;margin-top:6px;font-family:'Jost',sans-serif}
+.platforms{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:16px}
+.platforms .well{text-align:center}
+.platforms .num{font-size:2.1rem}
+@media(max-width:700px){.sync{grid-template-columns:1fr;justify-items:center}.platforms{width:100%}}
+
+/* heatmap */
+.heat-scroll{overflow-x:auto;padding:6px 4px 14px}
+.heat{display:grid;grid-template-rows:repeat(7,13px);grid-auto-flow:column;grid-auto-columns:13px;gap:4px;width:max-content}
+.heat i{border-radius:4px;background:var(--dark);box-shadow:inset 1px 1px 2px rgba(0,0,0,.35)}
+.heat i[data-l="1"]{background:#8a3a1f}.heat i[data-l="2"]{background:#c4531a}
+.heat i[data-l="3"]{background:var(--orange)}.heat i[data-l="4"]{background:var(--yellow);box-shadow:0 0 7px rgba(255,210,63,.6)}
+.stats{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
+.stats .well{flex:1;min-width:150px}
+
+/* leetcode bars */
+.bar{margin-top:16px}
+.bar .row{display:flex;justify-content:space-between;margin-bottom:6px}
+.track{height:14px;border-radius:10px;box-shadow:var(--press);overflow:hidden}
+.fill{height:100%;width:0;border-radius:10px;transition:width 1.2s ease}
+.easy{background:var(--blue)}.med{background:var(--yellow)}.hard{background:var(--orange);box-shadow:0 0 10px var(--orange)}
+
+/* contact */
+.contact{display:flex;gap:22px;flex-wrap:wrap}
+.contact a{flex:1;min-width:240px;display:block;text-decoration:none;color:var(--text);transition:box-shadow .2s}
+.contact a:hover{box-shadow:var(--press)}
+.contact a{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.4rem}
+.contact a span{display:block;font-family:'Jost',sans-serif;font-weight:400;color:var(--yellow);font-size:1rem;letter-spacing:.02em;word-break:break-all;margin-top:2px}
+.status{color:var(--muted);font-size:.9rem;margin-top:14px;min-height:1.4em}
+footer{margin-top:60px;color:var(--muted);text-align:center;font-size:.9rem}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Aayaan Singh</h1>
+    <p>Problem solver. Tracking every day I show up.</p>
+  </div>
+  <nav aria-label="Sections">
+    <a href="#github">GitHub</a><a href="#leetcode">LeetCode</a><a href="#codechef">CodeChef</a><a href="#codeforces">Codeforces</a><a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<h2>Sync streak</h2>
+<section class="card sync" aria-label="Combined streak">
+  <div class="ring">
+    <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="50"/><circle class="val" id="ringVal" cx="60" cy="60" r="50"/></svg>
+    <b><span id="combCur">--</span><small>day streak</small></b>
+  </div>
+  <div>
+    <p class="label" style="margin-bottom:14px">A day counts if you committed, solved on LeetCode, or submitted on CodeChef or Codeforces.</p>
+    <div class="platforms">
+      <div class="well"><div class="num" id="sGh">--</div><div class="label">GitHub</div></div>
+      <div class="well"><div class="num blue" id="sLc">--</div><div class="label">LeetCode</div></div>
+      <div class="well"><div class="num" id="sCc">--</div><div class="label">CodeChef</div></div>
+      <div class="well"><div class="num yellow" id="sCf">--</div><div class="label">Codeforces</div></div>
+    </div>
+    <div class="stats">
+      <div class="well"><div class="num" id="combLong">--</div><div class="label">Longest combined</div></div>
+      <div class="well"><div class="num" id="combDays">--</div><div class="label">Active days, past year</div></div>
+    </div>
+  </div>
+</section>
+
+<h2 id="github">GitHub</h2>
+<section class="card">
+  <div class="heat-scroll" id="heatScroll"><div class="heat" id="heat" aria-label="Contribution heatmap"></div></div>
+  <div class="stats">
+    <div class="well"><div class="num" id="ghTotal">--</div><div class="label">Contributions, past year</div></div>
+    <div class="well"><div class="num" id="ghCur">--</div><div class="label">Current streak</div></div>
+    <div class="well"><div class="num" id="ghLong">--</div><div class="label">Longest streak</div></div>
+    <div class="well"><div class="num" id="ghRepos">--</div><div class="label">Public repos</div></div>
+  </div>
+  <p class="status" id="ghStatus"></p>
+</section>
+
+<h2 id="leetcode">LeetCode</h2>
+<section class="grid g2">
+  <div class="card">
+    <div class="label">Total solved</div>
+    <div class="num" id="lcTotal">--</div>
+    <div class="bar"><div class="row"><span>Easy</span><span class="mono" id="lcE">--</span></div><div class="track"><div class="fill easy" id="fE"></div></div></div>
+    <div class="bar"><div class="row"><span>Medium</span><span class="mono" id="lcM">--</span></div><div class="track"><div class="fill med" id="fM"></div></div></div>
+    <div class="bar"><div class="row"><span>Hard</span><span class="mono" id="lcH">--</span></div><div class="track"><div class="fill hard" id="fH"></div></div></div>
+  </div>
+  <div class="card">
+    <div class="grid g3" style="grid-template-columns:1fr 1fr">
+      <div class="well"><div class="num blue" id="lcCur">--</div><div class="label">Current streak</div></div>
+      <div class="well"><div class="num blue" id="lcLong">--</div><div class="label">Longest streak</div></div>
+      <div class="well"><div class="num blue" id="lcDays">--</div><div class="label">Active days</div></div>
+      <div class="well"><div class="num blue" id="lcRank">--</div><div class="label">Ranking</div></div>
+    </div>
+    <p class="status" id="lcStatus"></p>
+  </div>
+</section>
+
+<h2 id="codechef">CodeChef</h2>
+<section class="card">
+  <div class="stats" style="margin-top:0">
+    <div class="well"><div class="num" id="ccRating">--</div><div class="label">Rating</div></div>
+    <div class="well"><div class="num" id="ccMax">--</div><div class="label">Highest rating</div></div>
+    <div class="well"><div class="num" id="ccStars">--</div><div class="label">Stars</div></div>
+    <div class="well"><div class="num" id="ccRank">--</div><div class="label">Global rank</div></div>
+    <div class="well"><div class="num" id="ccCur">--</div><div class="label">Current streak</div></div>
+    <div class="well"><div class="num" id="ccLong">--</div><div class="label">Longest streak</div></div>
+  </div>
+  <p class="status" id="ccStatus"></p>
+</section>
+
+<h2 id="codeforces">Codeforces</h2>
+<section class="card">
+  <div class="stats" style="margin-top:0">
+    <div class="well"><div class="num yellow" id="cfRating">--</div><div class="label">Rating</div></div>
+    <div class="well"><div class="num yellow" id="cfMax">--</div><div class="label">Max rating</div></div>
+    <div class="well"><div class="num yellow" id="cfRank">--</div><div class="label">Rank</div></div>
+    <div class="well"><div class="num yellow" id="cfSolved">--</div><div class="label">Problems solved</div></div>
+    <div class="well"><div class="num yellow" id="cfCur">--</div><div class="label">Current streak</div></div>
+    <div class="well"><div class="num yellow" id="cfLong">--</div><div class="label">Longest streak</div></div>
+  </div>
+  <p class="status" id="cfStatus"></p>
+</section>
+
+<h2 id="contact">Contact</h2>
+<section class="contact">
+  <a class="card" href="mailto:aayaansingh404@gmail.com">Email<span class="mono">aayaansingh404@gmail.com</span></a>
+  <a class="card" href="https://www.linkedin.com/in/aayaan-singh/" target="_blank" rel="noopener">LinkedIn<span class="mono">in/aayaan-singh</span></a>
+  <a class="card" id="ghLink" href="#" target="_blank" rel="noopener">GitHub<span class="mono" id="ghLinkTxt">set your username</span></a>
+  <a class="card" href="https://leetcode.com/u/Rayquaza_Z/" target="_blank" rel="noopener">LeetCode<span class="mono">Rayquaza_Z</span></a>
+  <a class="card" href="https://www.codechef.com/users/rayquaza_z" target="_blank" rel="noopener">CodeChef<span class="mono">rayquaza_z</span></a>
+</section>
+
+<footer class="mono" id="foot">Loading stats...</footer>
+</div>
+
+<script>
+/* ====== EDIT THESE ====== */
+const CONFIG = {
+  github: "Rayquaza-Z",
+  leetcode: "Rayquaza_Z",
+  codechef: "rayquaza_z",
+  codeforces: ""       // optional: your Codeforces handle
+};
+/* ======================== */
+
+const $ = id => document.getElementById(id);
+const day = ts => new Date(ts * 1000).toISOString().slice(0, 10);
+const todayKey = () => new Date().toISOString().slice(0, 10);
+const shift = (key, n) => { const d = new Date(key + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+
+function streaks(set) {
+  let cur = 0, k = todayKey();
+  if (!set.has(k)) k = shift(k, -1);          // today not done yet: streak still alive
+  while (set.has(k)) { cur++; k = shift(k, -1); }
+  let longest = 0, run = 0, prev = null;
+  [...set].sort().forEach(d => {
+    run = prev && shift(prev, 1) === d ? run + 1 : 1;
+    longest = Math.max(longest, run); prev = d;
+  });
+  return { cur, longest };
+}
+const get = async (url, opt = {}, ms = 25000) => {
+  const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
+  try { const r = await fetch(url, { ...opt, signal: c.signal }); if (!r.ok) throw new Error("HTTP " + r.status); return await r.json(); }
+  catch (e) { throw new Error(e.name === "AbortError" ? "timed out" : e.message); }
+  finally { clearTimeout(t); }
+};
+const first = async fns => { let last; for (const f of fns) { try { return await f(); } catch (e) { last = e; } } throw last; };
+const HINT = window.self !== window.top
+  ? " This page is inside a preview frame, which blocks outside requests. Open the file directly in your browser."
+  : " If this keeps happening, open the browser console (F12) for details.";
+const sets = { gh: new Set(), lc: new Set(), cc: new Set(), cf: new Set() };
+
+async function loadGitHub() {
+  const u = CONFIG.github;
+  if (!u) { $("ghStatus").textContent = "Add your GitHub username in CONFIG to load this section."; return; }
+  $("ghLink").href = "https://github.com/" + u; $("ghLinkTxt").textContent = "@" + u;
+  get("https://api.github.com/users/" + u).then(p => { $("ghRepos").textContent = p.public_repos; }).catch(() => {});
+  try {
+    const c = await get(`https://github-contributions-api.jogruber.de/v4/${u}?y=last`);
+    const days = c.contributions;
+    const heat = $("heat"); heat.innerHTML = "";
+    const lead = new Date(days[0].date + "T00:00:00Z").getUTCDay();
+    for (let i = 0; i < lead; i++) heat.appendChild(document.createElement("i")).style.visibility = "hidden";
+    days.forEach(d => {
+      const i = document.createElement("i"); i.dataset.l = d.level; i.title = `${d.count} on ${d.date}`;
+      heat.appendChild(i); if (d.count > 0) sets.gh.add(d.date);
+    });
+    $("heatScroll").scrollLeft = 99999;
+    const s = streaks(sets.gh);
+    $("ghTotal").textContent = days.reduce((a, d) => a + d.count, 0);
+    $("ghCur").textContent = s.cur; $("ghLong").textContent = s.longest;
+  } catch (e) {
+    try {   // fallback: public events (about the last 90 days only)
+      const ev = await get(`https://api.github.com/users/${u}/events/public?per_page=100`);
+      ev.forEach(x => sets.gh.add(x.created_at.slice(0, 10)));
+      const s = streaks(sets.gh);
+      $("ghCur").textContent = s.cur; $("ghLong").textContent = s.longest;
+      $("ghStatus").textContent = "Heatmap source is down, so streaks use your recent public activity only.";
+    } catch (e2) { $("ghStatus").textContent = "Could not load GitHub data (" + e2.message + ")." + HINT; }
+  }
+}
+
+const LC_QUERY = "query($u:String!){matchedUser(username:$u){profile{ranking} submitStats{acSubmissionNum{difficulty count}} userCalendar{totalActiveDays submissionCalendar}}}";
+async function loadLeetCode() {
+  const u = CONFIG.leetcode;
+  try {
+    const d = await first([
+      async () => {   // 1: community API (can be asleep for ~30s)
+        const api = "https://alfa-leetcode-api.onrender.com/" + u;
+        const [s, cal, prof] = await Promise.all([get(api + "/solved"), get(api + "/calendar"), get(api).catch(() => null)]);
+        if (s.errors) throw new Error("user not found");
+        return { total: s.solvedProblem, easy: s.easySolved, medium: s.mediumSolved, hard: s.hardSolved,
+                 rank: prof && prof.ranking, cal: cal.submissionCalendar, days: cal.totalActiveDays };
+      },
+      async () => {   // 2: stats API
+        const r = await get("https://leetcode-stats-api.herokuapp.com/" + u);
+        if (r.status === "error") throw new Error(r.message);
+        return { total: r.totalSolved, easy: r.easySolved, medium: r.mediumSolved, hard: r.hardSolved, rank: r.ranking, cal: r.submissionCalendar };
+      },
+      async () => {   // 3: LeetCode GraphQL through a CORS proxy
+        const r = await get("https://corsproxy.io/?url=" + encodeURIComponent("https://leetcode.com/graphql"),
+          { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: LC_QUERY, variables: { u } }) });
+        const m = r.data.matchedUser, n = {}; m.submitStats.acSubmissionNum.forEach(x => n[x.difficulty] = x.count);
+        return { total: n.All, easy: n.Easy, medium: n.Medium, hard: n.Hard, rank: m.profile.ranking,
+                 cal: m.userCalendar.submissionCalendar, days: m.userCalendar.totalActiveDays };
+      }
+    ]);
+    $("lcTotal").textContent = d.total;
+    [["E", d.easy, 900], ["M", d.medium, 1900], ["H", d.hard, 850]].forEach(([k, v, max]) => {
+      $("lc" + k).textContent = v; $("f" + k).style.width = Math.min(100, v / max * 100) + "%";
+    });
+    const raw = typeof d.cal === "string" ? JSON.parse(d.cal) : (d.cal || {});
+    Object.keys(raw).forEach(ts => sets.lc.add(day(+ts)));
+    const st = streaks(sets.lc);
+    $("lcCur").textContent = st.cur; $("lcLong").textContent = st.longest;
+    $("lcDays").textContent = d.days ?? sets.lc.size;
+    $("lcRank").textContent = d.rank ? "#" + Number(d.rank).toLocaleString() : "--";
+  } catch (e) { $("lcStatus").textContent = "Could not load LeetCode data (" + e.message + "). All three sources failed." + HINT; }
+}
+
+async function loadCodeChef() {
+  const h = CONFIG.codechef;
+  if (!h) { $("ccStatus").textContent = "Add your CodeChef handle in CONFIG to load this section."; return; }
+  try {
+    const d = await get("https://codechef-api.vercel.app/handle/" + h);
+    if (d.success === false) throw new Error("not found");
+    $("ccRating").textContent = d.currentRating ?? "--"; $("ccMax").textContent = d.highestRating ?? "--";
+    $("ccStars").textContent = d.stars ?? "--";
+    $("ccRank").textContent = d.globalRank ? "#" + Number(d.globalRank).toLocaleString() : "--";
+    (d.heatMap || []).forEach(x => {
+      if (!(x.value > 0)) return;
+      const [y, m, dd] = x.date.split("-");
+      sets.cc.add(`${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`);
+    });
+    const st = streaks(sets.cc);
+    $("ccCur").textContent = st.cur; $("ccLong").textContent = st.longest;
+  } catch (e) { $("ccStatus").textContent = "Could not load CodeChef data (" + e.message + ")." + HINT; }
+}
+
+async function loadCodeforces() {
+  const h = CONFIG.codeforces;
+  if (!h) { $("cfStatus").textContent = "Optional: add your Codeforces handle in CONFIG to load this section."; return; }
+  try {
+    const [info, subs] = await Promise.all([
+      get("https://codeforces.com/api/user.info?handles=" + h),
+      get(`https://codeforces.com/api/user.status?handle=${h}&from=1&count=5000`)
+    ]);
+    const u = info.result[0];
+    $("cfRating").textContent = u.rating ?? "--"; $("cfMax").textContent = u.maxRating ?? "--";
+    $("cfRank").textContent = u.rank ?? "unrated";
+    const solved = new Set();
+    subs.result.forEach(r => {
+      sets.cf.add(day(r.creationTimeSeconds));
+      if (r.verdict === "OK") solved.add(r.problem.contestId + r.problem.index);
+    });
+    $("cfSolved").textContent = solved.size;
+    const st = streaks(sets.cf);
+    $("cfCur").textContent = st.cur; $("cfLong").textContent = st.longest;
+  } catch (e) { $("cfStatus").textContent = "Could not load Codeforces data (" + e.message + ")." + HINT; }
+}
+
+function combined() {
+  const all = new Set([...sets.gh, ...sets.lc, ...sets.cc, ...sets.cf]);
+  const s = streaks(all);
+  $("combCur").textContent = s.cur; $("combLong").textContent = s.longest;
+  const cutoff = shift(todayKey(), -365);
+  $("combDays").textContent = [...all].filter(d => d >= cutoff).length;
+  $("sGh").textContent = streaks(sets.gh).cur; $("sLc").textContent = streaks(sets.lc).cur; $("sCc").textContent = streaks(sets.cc).cur; $("sCf").textContent = streaks(sets.cf).cur;
+  $("ringVal").style.strokeDashoffset = 314 * (1 - Math.min(s.cur, 30) / 30);   // ring fills at a 30 day streak
+}
+
+Promise.all([loadGitHub(), loadLeetCode(), loadCodeChef(), loadCodeforces()]).then(() => {
+  combined();
+  $("foot").textContent = "Last synced " + new Date().toLocaleString();
+});
+</script>
+</body>
+</html>
