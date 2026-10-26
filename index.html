@@ -333,13 +333,19 @@ async function loadCodeforces() {
 }
 
 function combined() {
-  const all = new Set([...sets.gh, ...sets.lc, ...sets.cc, ...sets.cf]);
-  const s = streaks(all);
-  $("combCur").textContent = s.cur; $("combLong").textContent = s.longest;
+  // Show only LeetCode streak in the main ring and combo stats
+  const s = streaks(sets.lc);
+  $("combCur").textContent = s.cur;
+  $("combLong").textContent = s.longest;
   const cutoff = shift(todayKey(), -365);
-  $("combDays").textContent = [...all].filter(d => d >= cutoff).length;
-  $("sGh").textContent = streaks(sets.gh).cur; $("sLc").textContent = streaks(sets.lc).cur; $("sCc").textContent = streaks(sets.cc).cur; $("sCf").textContent = streaks(sets.cf).cur;
-  $("ringVal").style.strokeDashoffset = 314 * (1 - Math.min(s.cur, 30) / 30);   // ring fills at a 30 day streak
+  $("combDays").textContent = [...sets.lc].filter(d => d >= cutoff).length;
+  // Update individual platform streak displays (keep others unchanged)
+  $("sGh").textContent = streaks(sets.gh).cur;
+  $("sLc").textContent = s.cur;
+  $("sCc").textContent = streaks(sets.cc).cur;
+  $("sCf").textContent = streaks(sets.cf).cur;
+  // Ring visual reflects LeetCode streak (max 30 days)
+  $("ringVal").style.strokeDashoffset = 314 * (1 - Math.min(s.cur, 30) / 30);
 }
 
 Promise.all([loadGitHub(), loadLeetCode(), loadCodeChef(), loadCodeforces()]).then(() => {
